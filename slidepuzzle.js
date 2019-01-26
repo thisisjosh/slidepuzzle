@@ -14,17 +14,6 @@ class Tile {
 }
 
 class SlideGame {
-    generateTiles(){
-        let generatedTiles = []; // TODO: try using a JS set instead if the splice is not efficient
-
-        for(let i = 1; i <= 15; i++) {
-            let tile = new Tile(i);
-            generatedTiles.push(tile);
-            this.tilesByNum[i] = tile;
-        }
-
-        return generatedTiles;
-    }
 
     constructor(document){
         this.document = document;
@@ -32,20 +21,44 @@ class SlideGame {
         this.board = new Array(); // [down][across] jagged 2d array (array of arrays)
         this.spaceTile = new Tile(0);
         this.spaceTile.setBoardPosition(3, 3);
+        let i = 0;
 
-        let generatedTiles = this.generateTiles();
+        // let generatedTiles = this.generateTiles();
  
         // Place the tiles on the board
 
         for(let down = 0; down < 4; down++) {
             this.board[down] = new Array();
             for(let across = 0; across < 4; across++) {
-                let tile = removeRandomItem(generatedTiles);
+                let tile = new Tile(++i);
                 tile.setBoardPosition(down, across);
                 this.board[down][across] = tile;
-                if(generatedTiles.length == 0)
+                this.tilesByNum[i] = tile;
+                if(i == 15)
                     break;
             }
+        }
+    }
+
+    scramble(){
+        for(let i = 0; i < 1000; i++){
+            let neighbors = [];
+            // collect vertical or horizontal neighbors of the space
+            for(let n = 0; n < 4; n++) {
+                if(i % 2 == 0){
+                    if(n != this.spaceTile.across){
+                        neighbors.push(this.board[n][this.spaceTile.down]);
+                    }
+                }
+                else {
+                    if(n != this.spaceTile.down){
+                        neighbors.push(this.board[this.spaceTile.across][n]);
+                    }
+                }
+            }
+            // select random neighbor
+            let toMove = neighbors[randomIntFromInterval(0,2)];
+            this.tilePressed(toMove.num, false);
         }
     }
 
@@ -126,7 +139,7 @@ class SlideGame {
         }
     }
 
-    tilePressed(num) {
+    tilePressed(num, checkSolved = true) {
         let target = this.tilesByNum[num];
         let across = target.across;
         let down = target.down;
@@ -158,7 +171,7 @@ class SlideGame {
             console.log("nowhere to move, spaceTile " + this.spaceTile.down + " " + this.spaceTile.across);
         }
 
-        if(this.isSolved()) {
+        if(checkSolved && this.isSolved()) {
             alert("You Win!")
         }
     }
@@ -191,6 +204,7 @@ var slideGame = new SlideGame(document);
 function start(document){
     console.log("start");
     slideGame.render();
+    slideGame.scramble();
 }
 
 function onTilePress(event){
@@ -203,14 +217,11 @@ function onTilePress(event){
 
 // Utilities - TODO: Move to a lib
 
-// Remove a random item from a collection
-function removeRandomItem(items){
-    let index = randomIntFromInterval(0, items.length - 1);
-    let item = items.splice(index, 1)[0]; // remove element at index
-    return item;
-}
-
 function randomIntFromInterval(min,max)
 {
     return Math.floor(Math.random()*(max-min+1)+min);
+}
+
+function sleep(ms) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
