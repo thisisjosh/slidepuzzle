@@ -18,12 +18,10 @@ class SlideGame {
     constructor(document) {
         this.document = document;
         this.tilesByNum = [];
-        this.board = new Array(); // [down][across] jagged 2d array (array of arrays)
+        this.board = new Array(); // [down][across]
         this.spaceTile = new Tile(0);
         this.spaceTile.setBoardPosition(3, 3);
         let i = 0;
-
-        // let generatedTiles = this.generateTiles();
 
         // Place the tiles on the board
 
