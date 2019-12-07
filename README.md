@@ -1,4 +1,4 @@
 # slidepuzzle
-This is the classic sliding puzzle game. I implemented it quick and dirty in JavaScript.
+This is the classic sliding puzzle game.
 
 [Click Here to Play](https://thisisjosh.github.io/slidepuzzle/play.htm)
